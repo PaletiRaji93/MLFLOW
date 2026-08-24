@@ -11,3 +11,8 @@ with mlflow.start_run():
 
 
 https://dagshub.com/PaletiRaji93/MLFLOW.mlflow
+
+
+export MLFLOW_TRACKING_URI="https://dagshub.com/PaletiRaji93/MLFLOW.mlflow"
+export MLFLOW_TRACKING_USERNAME="PaletiRaji93"
+export MLFLOW_TRACKING_PASSWORD="ac4f677a95f70304a30a96813c7c744042092012"

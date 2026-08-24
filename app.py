@@ -34,8 +34,8 @@ if __name__ == "__main__":
     np.random.seed(40)
 
     # Read the wine-quality csv file from the URL
-    csv_path = ("datasets/winequality-red.csv"
-    )
+    csv_path = "datasets/winequality-red.csv"
+
     try:
         data = pd.read_csv(csv_path, sep=";")
     except Exception as e:
@@ -55,7 +55,12 @@ if __name__ == "__main__":
     alpha = float(sys.argv[1]) if len(sys.argv) > 1 else 0.5
     l1_ratio = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 
+    # For Remote server only (DAGShub)
+    remote_server_uri = "https://dagshub.com/PaletiRaji93/MLFLOW.mlflow"
+    mlflow.set_tracking_uri(remote_server_uri)
+
     with mlflow.start_run():
+
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)
 
@@ -70,28 +75,25 @@ if __name__ == "__main__":
 
         mlflow.log_param("alpha", alpha)
         mlflow.log_param("l1_ratio", l1_ratio)
+
         mlflow.log_metric("rmse", rmse)
         mlflow.log_metric("r2", r2)
         mlflow.log_metric("mae", mae)
 
-        #predictions = lr.predict(train_x)
-        #signature = infer_signature(train_x, predictions)
-
-        ## For Remote server only(DAGShub)
-
-        """remote_server_uri="https://dagshub.com/krishnaik06/mlflowexperiments.mlflow"
-        mlflow.set_tracking_uri(remote_server_uri)"""
+        # predictions = lr.predict(train_x)
+        # signature = infer_signature(train_x, predictions)
 
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
 
         # Model registry does not work with file store
         if tracking_url_type_store != "file":
+
             # Register the model
-            # There are other ways to use the Model Registry, which depends on the use case,
-            # please refer to the doc for more information:
-            # https://mlflow.org/docs/latest/model-registry.html#api-workflow
             mlflow.sklearn.log_model(
-                lr, "model", registered_model_name="ElasticnetWineModel"
+                lr,
+                "model",
+                registered_model_name="ElasticnetWineModel"
             )
+
         else:
             mlflow.sklearn.log_model(lr, "model")
